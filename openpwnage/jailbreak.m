@@ -5,6 +5,8 @@
 //  Created by Zachary Keffaber on 4/24/22.
 //
 
+//99% of this is stolen from spv
+
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #import <sys/types.h>

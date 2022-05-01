@@ -16,6 +16,7 @@
 		B05E8BC82810C17300EA3CE0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B05E8BC72810C17300EA3CE0 /* main.m */; };
 		B086939C2812E7A400E9CAAD /* phoenix.c in Sources */ = {isa = PBXBuildFile; fileRef = B086939B2812E7A400E9CAAD /* phoenix.c */; };
 		B0C29470281EFC3F00B00F98 /* patchfinder.c in Sources */ = {isa = PBXBuildFile; fileRef = B0C2946F281EFC3F00B00F98 /* patchfinder.c */; };
+		B0C29472281F01B100B00F98 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0C29471281F01B100B00F98 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		B086939B2812E7A400E9CAAD /* phoenix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = phoenix.c; sourceTree = "<group>"; };
 		B0C2946E281EFC3F00B00F98 /* patchfinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = patchfinder.h; sourceTree = "<group>"; };
 		B0C2946F281EFC3F00B00F98 /* patchfinder.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = patchfinder.c; sourceTree = "<group>"; };
+		B0C29471281F01B100B00F98 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = IOKit/IOKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0C29472281F01B100B00F98 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +91,7 @@
 		B0E990482811C40E00A9FFC4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B0C29471281F01B100B00F98 /* IOKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
