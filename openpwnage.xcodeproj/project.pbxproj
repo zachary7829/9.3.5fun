@@ -15,7 +15,6 @@
 		B05E8BC52810C17300EA3CE0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B05E8BC32810C17300EA3CE0 /* LaunchScreen.storyboard */; };
 		B05E8BC82810C17300EA3CE0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B05E8BC72810C17300EA3CE0 /* main.m */; };
 		B086939C2812E7A400E9CAAD /* phoenix.c in Sources */ = {isa = PBXBuildFile; fileRef = B086939B2812E7A400E9CAAD /* phoenix.c */; };
-		B0C29470281EFC3F00B00F98 /* patchfinder.c in Sources */ = {isa = PBXBuildFile; fileRef = B0C2946F281EFC3F00B00F98 /* patchfinder.c */; };
 		B0C29472281F01B100B00F98 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0C29471281F01B100B00F98 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -33,8 +32,6 @@
 		B05E8BC72810C17300EA3CE0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B05E8BCE2810C8A600EA3CE0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B086939B2812E7A400E9CAAD /* phoenix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = phoenix.c; sourceTree = "<group>"; };
-		B0C2946E281EFC3F00B00F98 /* patchfinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = patchfinder.h; sourceTree = "<group>"; };
-		B0C2946F281EFC3F00B00F98 /* patchfinder.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = patchfinder.c; sourceTree = "<group>"; };
 		B0C29471281F01B100B00F98 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = IOKit/IOKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,8 +79,6 @@
 				B086939B2812E7A400E9CAAD /* phoenix.c */,
 				B0463B872815AF4500F6C07E /* jailbreak.m */,
 				B0463B8C2815BB5C00F6C07E /* jailbreak.h */,
-				B0C2946E281EFC3F00B00F98 /* patchfinder.h */,
-				B0C2946F281EFC3F00B00F98 /* patchfinder.c */,
 			);
 			path = openpwnage;
 			sourceTree = "<group>";
@@ -166,7 +161,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B0C29470281EFC3F00B00F98 /* patchfinder.c in Sources */,
 				B05E8BBD2810C16E00EA3CE0 /* ViewController.m in Sources */,
 				B086939C2812E7A400E9CAAD /* phoenix.c in Sources */,
 				B05E8BB72810C16E00EA3CE0 /* AppDelegate.m in Sources */,

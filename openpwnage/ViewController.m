@@ -26,9 +26,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @implementation ViewController
 
+id param_;
+
 static id static_consoleView = nil;
-- (void)viewDidLoad {
+-(void)viewDidLoad {
     [super viewDidLoad];
+    param_ = self;
     //static_consoleView = _consoleView;
     [self setNeedsStatusBarAppearanceUpdate];
     // Do any additional setup after loading the view.
@@ -38,6 +41,7 @@ static id static_consoleView = nil;
     uname(&systemInfo);
     
     _consoleView.text = [NSString stringWithFormat:@"[*]openpwnage running on %@ with iOS %@\n", [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding], [[UIDevice currentDevice] systemVersion]];
+    //olog("olog functional!");
     
     NSArray *supportedDevices = [NSArray arrayWithObjects:@"iPad2,1",@"iPad2,2",@"iPad2,3",@"iPad2,4",@"iPad2,5",@"iPad2,6",@"iPad2,7",@"iPad3,1",@"iPad3,2",@"iPad3,3",@"iPad3,4",@"iPad3,5",@"iPad3,6",@"iPhone4,1",@"iPhone5,1",@"iPhone5,2",@"iPhone5,3",@"iPhone5,4",@"iPod5,1",@"iPod7,1", nil];
     //supports all 32bit devices on 9.0-9.3.5 (the kinfo leak works on 8.0-8.4.1 but the mach_ports_register() bug (CVE-2016-4669) doesn't), aka iPad 2, iPad Mini 1, iPad 3, iPad 4, iPhone 4S, iPhone 5, iPhone 5C, iPod Touch 5, iPod Touch 6
@@ -60,10 +64,7 @@ static id static_consoleView = nil;
 }
 - (IBAction)jailbreakButtonPressed:(id)sender {
     NSLog(@"button pressed");
-    //self.view.backgroundColor = [UIColor systemGreenColor];
     [self openpwnageConsoleLog:@"[*]starting jailbreak...\n"];
-    // task_t kernel_task = 0;
-    // task_for_pid(mach_task_self(), 0, &kernel_task);
     task_t tfp0 = get_kernel_task();
     [self openpwnageConsoleLog:@"[*]we tried getting tfp0, and holy shit it actually worked\n"];
     [self openpwnageConsoleLog:[NSString stringWithFormat: @"[*]tfp0=0x%x\n", tfp0]];
@@ -77,8 +78,17 @@ static id static_consoleView = nil;
     [self openpwnageConsoleLog:[NSString stringWithFormat: @"[*]slide=0x%08lx\n", kaslr_slide]];
     [self openpwnageConsoleLog:@"[*]this is great and all, but now time for actual shit\n"];
     [self openpwnageConsoleLog:@"[*]obtaining root...\n"];
-    rootify(tfp0, kernel_base, kaslr_slide);
-    [self openpwnageConsoleLog:@"[*]we root baby\n"];
+    if (rootify(tfp0, kernel_base, kaslr_slide)) {
+        [self openpwnageConsoleLog:@"[*]we root baby\n"];
+        [self openpwnageConsoleLog:@"[*]now, time to nuke sandbox\n"];
+        if (unsandbox(tfp0, kernel_base, kaslr_slide)) {
+            [self openpwnageConsoleLog:@"[*]no need to worry about sandbox anymore\n"];
+        } else {
+            [self openpwnageConsoleLog:@"[*]failed to nuke sandbox\n"];
+        }
+    } else {
+        [self openpwnageConsoleLog:@"[*]failed to get root :(\n"];
+    }
     [self openpwnageConsoleLog:@"[*]cleaning up exploit...\n"];
     exploit_cleanup(tfp0);
     [self openpwnageConsoleLog:@"[*]nice and tidy\n"];
@@ -87,9 +97,26 @@ static id static_consoleView = nil;
 }
 
 -(void)openpwnageConsoleLog: (NSString*)textToLog {
-    NSLog(@"%@", [[NSString alloc]initWithString:textToLog]);
+    NSLog(@"(olog)%@", [[NSString alloc]initWithString:textToLog]);
     NSMutableString *mutableLog = [_consoleView.text mutableCopy];
     _consoleView.text = [[NSString alloc]initWithString:[mutableLog stringByAppendingString:textToLog]];
 }
 
+void openpwnageCLog(NSString* textToLog) {
+    NSLog(@"openpwnageCLog\n");
+    //NSLog(@"%@", [[NSString alloc]initWithString:textToLog]);
+    dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [param_ openpwnageConsoleLog:textToLog];
+    });
+}
+
 @end
+
+/*
+ [self openpwnageConsoleLog:@"[*]i wonder if pmap patch works\n"];
+ if (is_pmap_patch_success(tfp0, kernel_base, kaslr_slide)) {
+     [self openpwnageConsoleLog:@"[*]pmap success! woo\n"];
+ } else {
+     [self openpwnageConsoleLog:@"[*]nope :/\n"];
+ }
+ */

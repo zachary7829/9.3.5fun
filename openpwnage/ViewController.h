@@ -10,8 +10,7 @@
 #include <sys/utsname.h>
 
 @interface ViewController : UIViewController
-
-//-(void)openpwnageConsoleLog:(NSString*)textToLog;
+void openpwnageCLog(NSString* textToLog);
 uintptr_t kbase(void);
 task_t get_kernel_task(void);
 void exploit_cleanup(task_t);

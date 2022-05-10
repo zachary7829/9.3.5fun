@@ -1,5 +1,5 @@
 # 9.3.5fun
-gets root on iOS 9.0-9.3.6 32bit using Phoenix
+gets root on iOS 9.0-9.3.6 32bit using Phoenix, and escapes sandbox
 
 ### Why?
 ~~I'm building this~~ stealing p0laris's code to attempt to learn more about how userland jailbreaks work

